@@ -1,0 +1,25 @@
+{
+    "name": "typescript-debounce",
+    "version": "0.1.0",
+    "description": "Debounce decorator for automatic function debouncing",
+    "homepage": "https://github.com/bushee/typescript-debounce",
+    "author": {
+        "name": "Krzysztof \"Bushee\" Nowaczyk",
+        "email": "bushee01@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:bushee/typescript-debounce.git"
+    },
+    "bugs": {
+        "url": "https://github.com/bushee/typescript-debounce/issues"
+    },
+    "license": "MIT",
+    "engines": {
+        "node": ">=0.10.0"
+    },
+    "main": "index.ts",
+    "peerDependencies": {
+        "typescript": "2.9.2"
+    }
+}
