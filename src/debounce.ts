@@ -15,7 +15,7 @@ export type GenericMethodDecorator<T> = (target: object, propertyKey: string | s
 
 function debounceFunction(func: NotReturningFunction, delay: number): NotReturningFunction {
     let timeoutId: any;
-    return (...args: any[]) => {
+    return function (...args: any[]): any {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
