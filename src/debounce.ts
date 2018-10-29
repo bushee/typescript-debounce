@@ -1,6 +1,6 @@
 export function Debounce<T, U>(options: DebounceOptions<T, U>): GenericMethodDecorator<NotReturningFunction> {
     return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<NotReturningFunction>) => {
-        const originalFunc = descriptor.value;
+        const originalFunc = descriptor.value!!;
         descriptor.value = debounceFunction(originalFunc, options.millisecondsDelay);
     };
 }

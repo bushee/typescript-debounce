@@ -1,6 +1,6 @@
 {
     "name": "typescript-debounce",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Debounce decorator for automatic function debouncing",
     "homepage": "https://github.com/bushee/typescript-debounce",
     "author": {
@@ -18,8 +18,21 @@
     "engines": {
         "node": ">=0.10.0"
     },
-    "main": "index.ts",
+    "main": "dist/debounce.js",
+    "typings": "dist/debounce.d.ts",
     "peerDependencies": {
         "typescript": "2.9.2"
-    }
+    },
+    "devDependencies": {
+        "pre-commit": "1.2.2",
+        "typescript": "2.9.2"
+    },
+    "scripts": {
+        "build": "tsc",
+        "add-built-files": "git add dist"
+    },
+    "pre-commit": [
+        "build",
+        "add-built-files"
+    ]
 }
