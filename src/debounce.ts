@@ -20,7 +20,7 @@ function debounceFunction(func: NotReturningFunction, delay: number): NotReturni
             clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(() => {
-            func(...args);
+            func.apply(this, args);
             timeoutId = void 0;
         }, delay);
     };

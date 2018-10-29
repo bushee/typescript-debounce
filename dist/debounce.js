@@ -5,6 +5,7 @@ export function Debounce(options) {
     };
 }
 function debounceFunction(func, delay) {
+    var _this = this;
     var timeoutId;
     return function () {
         var args = [];
@@ -15,7 +16,7 @@ function debounceFunction(func, delay) {
             clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(function () {
-            func.apply(void 0, args);
+            func.apply(_this, args);
             timeoutId = void 0;
         }, delay);
     };

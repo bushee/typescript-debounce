@@ -1,6 +1,6 @@
 {
     "name": "typescript-debounce",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Debounce decorator for automatic function debouncing",
     "homepage": "https://github.com/bushee/typescript-debounce",
     "author": {
