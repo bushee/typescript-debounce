@@ -1,11 +1,11 @@
-export function Debounce<T, U>(options: DebounceOptions<T, U>): GenericMethodDecorator<NotReturningFunction> {
+export function Debounce(options: DebounceOptions): GenericMethodDecorator<NotReturningFunction> {
     return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<NotReturningFunction>) => {
         const originalFunc = descriptor.value!!;
         descriptor.value = debounceFunction(originalFunc, options.millisecondsDelay);
     };
 }
 
-export interface DebounceOptions<T, U> {
+export interface DebounceOptions {
     millisecondsDelay: number
 }
 
