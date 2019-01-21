@@ -12,7 +12,8 @@
     "outDir": "dist",
     "declaration": true,
     "declarationDir": "dist",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "experimentalDecorators": true
   },
   "include": [
     "src/**/*.ts"

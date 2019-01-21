@@ -24,12 +24,20 @@
         "typescript": ">=2.9.2"
     },
     "devDependencies": {
+        "@types/jasmine": "3.3.7",
+        "jasmine-core": "3.3.0",
+        "karma": "3.1.4",
+        "karma-jasmine": "2.0.1",
+        "karma-junit-reporter": "1.2.0",
+        "karma-phantomjs-launcher": "1.0.4",
+        "karma-typescript": "3.0.13",
         "pre-commit": "1.2.2",
         "typescript": "2.9.2"
     },
     "scripts": {
         "build": "tsc",
-        "add-built-files": "git add dist"
+        "add-built-files": "git add dist",
+        "test": "karma start"
     },
     "pre-commit": [
         "build",
