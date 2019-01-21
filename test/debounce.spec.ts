@@ -1,4 +1,4 @@
-import {Debounce, DebounceOptions} from "../src/debounce";
+import {AppendingArgumentsReducer, Debounce, DebounceOptions} from "../src";
 import Spy = jasmine.Spy;
 
 describe('@Debounce()', () => {
@@ -79,6 +79,41 @@ describe('@Debounce()', () => {
             // then
             expect(spy).toHaveBeenCalledWith(4, 5, 6);
         });
+
+        it('should reduce arguments of multiple calls using specified reducer', () => {
+            // given
+            const {spy, debouncedMethod} = createDebouncedMethod({
+                argumentsReducer: AppendingArgumentsReducer,
+                millisecondsDelay: 0
+            });
+
+            // when
+            debouncedMethod(1, 2, 3);
+            debouncedMethod(4, 5, 6);
+            jasmine.clock().tick(0);
+
+            // then
+            expect(spy).toHaveBeenCalledWith(1, 2, 3, 4, 5, 6);
+        });
+
+        it('should not retain reduced arguments when debounce is reset', () => {
+            // given
+            const {spy, debouncedMethod} = createDebouncedMethod({
+                argumentsReducer: AppendingArgumentsReducer,
+                millisecondsDelay: 0
+            });
+
+            // when
+            debouncedMethod(1, 2, 3);
+            debouncedMethod(4, 5, 6);
+            jasmine.clock().tick(0);
+            debouncedMethod(7, 8, 9);
+            jasmine.clock().tick(0);
+
+            // then
+            expect(spy).toHaveBeenCalledWith(1, 2, 3, 4, 5, 6);
+            expect(spy).toHaveBeenCalledWith(7, 8, 9);
+        });
     });
 
     describe('this', () => {
@@ -105,7 +140,7 @@ describe('@Debounce()', () => {
     });
 });
 
-function createDebouncedMethod(options: DebounceOptions = {millisecondsDelay: 0}): DebouncedMethodCreationResult {
+function createDebouncedMethod(options: DebounceOptions<any> = {millisecondsDelay: 0}): DebouncedMethodCreationResult {
     const spy = jasmine.createSpy('testMethod');
 
     class TestClass {

@@ -42,3 +42,16 @@ instance.someMethod('foo', 42);
 // after 1000 ms will display
 // arg1: "foo" arg2: 42
 ```
+
+## Configuration
+Available options:
+
+- `millisecondsDelay` - amount of time (in ms) that has to pass since last function call to actually invoke the debounced code
+- `argumentsReducer` *(optional)* - reducer function to handle multiple arguments lists passed in many calls; you may implement any reducer function manually, yet these are provided by this module:
+    - `OverridingArgumentsReducer` *(default, if none specified)* - use only arguments from the last call
+    - `AppendingArgumentsReducer` - append arguments of all subsequent method calls; since the actual arguments list lenght is arbitrary, the only sensible way to use it is when a function with "rest" argument is decorated
+
+    Reducer is a function that accepts two arguments, containing both previous and current arguments, and produces resulting arguments list. Its interface is as follows:
+    ```js
+    ArgumentsReducer<T> = (previousArgs: T[], newArgs: T[]) => T[]
+    ```

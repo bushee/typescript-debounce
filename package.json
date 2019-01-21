@@ -1,6 +1,6 @@
 {
     "name": "typescript-debounce",
-    "version": "0.1.4",
+    "version": "0.2.0",
     "description": "Debounce decorator for automatic function debouncing",
     "homepage": "https://github.com/bushee/typescript-debounce",
     "author": {
@@ -18,8 +18,8 @@
     "engines": {
         "node": ">=0.10.0"
     },
-    "main": "dist/debounce.js",
-    "typings": "dist/debounce.d.ts",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
     "peerDependencies": {
         "typescript": ">=2.9.2"
     },
