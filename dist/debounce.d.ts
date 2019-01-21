@@ -1,4 +1,4 @@
-export declare function Debounce(options: DebounceOptions): GenericMethodDecorator<NotReturningFunction>;
+export declare function Debounce<F extends NotReturningFunction>(options: DebounceOptions): GenericMethodDecorator<F>;
 export interface DebounceOptions {
     millisecondsDelay: number;
 }

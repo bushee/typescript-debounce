@@ -1,5 +1,5 @@
-export function Debounce(options: DebounceOptions): GenericMethodDecorator<NotReturningFunction> {
-    return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<NotReturningFunction>) => {
+export function Debounce<F extends NotReturningFunction>(options: DebounceOptions): GenericMethodDecorator<F> {
+    return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<F>) => {
         const originalFunc = descriptor.value!!;
         descriptor.value = debounceFunction(originalFunc, options.millisecondsDelay);
     };
@@ -13,9 +13,9 @@ export type NotReturningFunction = (...args: any[]) => void;
 
 export type GenericMethodDecorator<T> = (target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
 
-function debounceFunction(func: NotReturningFunction, delay: number): NotReturningFunction {
-    let timeoutId: any;
-    return function (...args: any[]): any {
+function debounceFunction<F extends NotReturningFunction>(func: F, delay: number): F {
+    let timeoutId: number | undefined;
+    return function (...args: any[]): void {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
@@ -23,5 +23,5 @@ function debounceFunction(func: NotReturningFunction, delay: number): NotReturni
             func.apply(this, args);
             timeoutId = void 0;
         }, delay);
-    };
+    } as F;
 }
