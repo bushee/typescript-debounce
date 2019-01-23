@@ -3,7 +3,15 @@ export function Debounce(options) {
     return function (target, propertyKey, descriptor) {
         var originalFunc = descriptor.value;
         var argumentsReducer = options.argumentsReducer || OverridingArgumentsReducer;
-        descriptor.value = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
+        delete descriptor.value;
+        delete descriptor.writable;
+        descriptor.get = function () {
+            var debouncedFunction = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
+            Object.defineProperty(this, propertyKey, {
+                value: debouncedFunction
+            });
+            return debouncedFunction;
+        };
     };
 }
 function debounceFunction(func, delay, reducer) {

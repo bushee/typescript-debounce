@@ -13,7 +13,7 @@ describe('@Debounce()', () => {
     describe('delay', () => {
         it('should not call debounced function until desired amount of time passes', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod({millisecondsDelay: 100});
+            const {spy, debouncedMethod} = createTestInstance({millisecondsDelay: 100});
 
             // when
             debouncedMethod();
@@ -25,7 +25,7 @@ describe('@Debounce()', () => {
 
         it('should call debounced function only after desired amount of time has passed', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod({millisecondsDelay: 100});
+            const {spy, debouncedMethod} = createTestInstance({millisecondsDelay: 100});
 
             // when
             debouncedMethod();
@@ -39,7 +39,7 @@ describe('@Debounce()', () => {
     describe('multiple calls', () => {
         it('should call debounced function only once if all calls were done before desired amount of time', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod();
+            const {spy, debouncedMethod} = createTestInstance();
 
             // when
             debouncedMethod();
@@ -53,7 +53,7 @@ describe('@Debounce()', () => {
 
         it('should call debounced function again when new call is done after desired amount of time', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod({millisecondsDelay: 100});
+            const {spy, debouncedMethod} = createTestInstance({millisecondsDelay: 100});
 
             // when
             debouncedMethod();
@@ -69,7 +69,7 @@ describe('@Debounce()', () => {
     describe('arguments', () => {
         it('should use arguments of last function call', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod();
+            const {spy, debouncedMethod} = createTestInstance();
 
             // when
             debouncedMethod(1, 2, 3);
@@ -82,7 +82,7 @@ describe('@Debounce()', () => {
 
         it('should reduce arguments of multiple calls using specified reducer', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod({
+            const {spy, debouncedMethod} = createTestInstance({
                 argumentsReducer: AppendingArgumentsReducer,
                 millisecondsDelay: 0
             });
@@ -98,7 +98,7 @@ describe('@Debounce()', () => {
 
         it('should not retain reduced arguments when debounce is reset', () => {
             // given
-            const {spy, debouncedMethod} = createDebouncedMethod({
+            const {spy, debouncedMethod} = createTestInstance({
                 argumentsReducer: AppendingArgumentsReducer,
                 millisecondsDelay: 0
             });
@@ -114,20 +114,29 @@ describe('@Debounce()', () => {
             expect(spy).toHaveBeenCalledWith(1, 2, 3, 4, 5, 6);
             expect(spy).toHaveBeenCalledWith(7, 8, 9);
         });
+
+        it('debounced method call on independent instances should handle arguments independently', () => {
+            // given
+            const {TestClass, spy} = createTestInstance();
+            const instance1 = new TestClass();
+            const instance2 = new TestClass();
+
+            // when
+            instance1.testMethod('abc');
+            instance2.testMethod('def');
+            jasmine.clock().tick(0);
+
+            // then
+            expect(spy).toHaveBeenCalledTimes(2);
+            expect(spy).toHaveBeenCalledWith('abc');
+            expect(spy).toHaveBeenCalledWith('def');
+        });
     });
 
     describe('this', () => {
         it('should retain "this" value', () => {
             // given
-            class TestClass {
-                public lastCallArgs: any[];
-
-                @Debounce({millisecondsDelay: 0})
-                public testMethod(...args: any[]): void {
-                    this.lastCallArgs = args;
-                }
-            }
-
+            const {TestClass} = createTestInstance();
             const instance = new TestClass();
 
             // when
@@ -137,27 +146,68 @@ describe('@Debounce()', () => {
             // then
             expect(instance.lastCallArgs).toEqual([1, 2, 3]);
         });
+
+        it('"this" value should not be fixed to original instance', () => {
+            // given
+            const {TestClass} = createTestInstance();
+            const instance = new TestClass();
+            const fakeInstance = {} as TestClass;
+
+            // when
+            instance.testMethod.call(fakeInstance, 1, 2, 3);
+            jasmine.clock().tick(0);
+
+            // then
+            expect(fakeInstance.lastCallArgs).toEqual([1, 2, 3]);
+        });
+
+        it('debounced method call on independent instances should retain "this" independently', () => {
+            // given
+            const {TestClass} = createTestInstance();
+            const instance1 = new TestClass();
+            const instance2 = new TestClass();
+
+            // when
+            instance1.testMethod('abc');
+            instance2.testMethod('def');
+            jasmine.clock().tick(0);
+
+            // then
+            expect(instance1.lastCallArgs).toEqual(['abc']);
+            expect(instance2.lastCallArgs).toEqual(['def']);
+        });
     });
 });
 
-function createDebouncedMethod(options: DebounceOptions<any> = {millisecondsDelay: 0}): DebouncedMethodCreationResult {
+function createTestInstance(options: DebounceOptions<any> = {millisecondsDelay: 0}): DebouncedMethodCreationResult {
     const spy = jasmine.createSpy('testMethod');
 
     class TestClass {
+        public lastCallArgs: any[];
+
         @Debounce(options)
         public testMethod(...args: any[]): void {
+            this.lastCallArgs = args;
             spy(...args);
         }
     }
 
     const instance = new TestClass();
     return {
-        debouncedMethod: instance.testMethod,
+        TestClass,
+        debouncedMethod: (...args: any[]) => instance.testMethod(...args),
         spy
     };
 }
 
+interface TestClass {
+    lastCallArgs: any[]
+
+    testMethod(...args: any[]): void
+}
+
 interface DebouncedMethodCreationResult {
+    TestClass: { new(): TestClass },
     debouncedMethod: (...args: any[]) => void
     spy: Spy
 }

@@ -1,10 +1,18 @@
-import {OverridingArgumentsReducer, ArgumentsReducer} from "./arguments-reducer";
+import {ArgumentsReducer, OverridingArgumentsReducer} from "./arguments-reducer";
 
 export function Debounce<T, F extends NotReturningFunction<T>>(options: DebounceOptions<T>): GenericMethodDecorator<F> {
     return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<F>) => {
         const originalFunc = descriptor.value!!;
         const argumentsReducer = options.argumentsReducer || OverridingArgumentsReducer;
-        descriptor.value = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
+        delete descriptor.value;
+        delete descriptor.writable;
+        descriptor.get = function (): F {
+            const debouncedFunction = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
+            Object.defineProperty(this, propertyKey, {
+                value: debouncedFunction
+            });
+            return debouncedFunction;
+        };
     };
 }
 
