@@ -5,11 +5,20 @@ export function Debounce(options) {
         var argumentsReducer = options.argumentsReducer || OverridingArgumentsReducer;
         delete descriptor.value;
         delete descriptor.writable;
+        var ie11BugWorkaround = false;
         descriptor.get = function () {
+            if (ie11BugWorkaround) {
+                return void 0;
+            }
+            ie11BugWorkaround = true;
+            if (this.hasOwnProperty(propertyKey)) {
+                return this[propertyKey];
+            }
             var debouncedFunction = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
             Object.defineProperty(this, propertyKey, {
                 value: debouncedFunction
             });
+            ie11BugWorkaround = false;
             return debouncedFunction;
         };
     };

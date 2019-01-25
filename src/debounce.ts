@@ -1,16 +1,27 @@
 import {ArgumentsReducer, OverridingArgumentsReducer} from "./arguments-reducer";
 
 export function Debounce<T, F extends NotReturningFunction<T>>(options: DebounceOptions<T>): GenericMethodDecorator<F> {
-    return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<F>) => {
+    return (target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<F | undefined>) => {
         const originalFunc = descriptor.value!!;
         const argumentsReducer = options.argumentsReducer || OverridingArgumentsReducer;
         delete descriptor.value;
         delete descriptor.writable;
-        descriptor.get = function (): F {
+        let ie11BugWorkaround = false;
+        descriptor.get = function (): F | undefined {
+            if (ie11BugWorkaround) {
+                // workaround for IE11 bug reported at https://github.com/medikoo/es6-symbol/issues/12
+                return void 0;
+            }
+            ie11BugWorkaround = true;
+            if (this.hasOwnProperty(propertyKey)) {
+                // workaround for weird behaviour noticed randomly in phantomJS for some projects
+                return this[propertyKey];
+            }
             const debouncedFunction = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
             Object.defineProperty(this, propertyKey, {
                 value: debouncedFunction
             });
+            ie11BugWorkaround = false;
             return debouncedFunction;
         };
     };
