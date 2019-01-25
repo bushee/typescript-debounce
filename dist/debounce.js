@@ -12,6 +12,7 @@ export function Debounce(options) {
             }
             ie11BugWorkaround = true;
             if (this.hasOwnProperty(propertyKey)) {
+                ie11BugWorkaround = false;
                 return this[propertyKey];
             }
             var debouncedFunction = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);

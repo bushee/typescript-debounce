@@ -15,6 +15,7 @@ export function Debounce<T, F extends NotReturningFunction<T>>(options: Debounce
             ie11BugWorkaround = true;
             if (this.hasOwnProperty(propertyKey)) {
                 // workaround for weird behaviour noticed randomly in phantomJS for some projects
+                ie11BugWorkaround = false;
                 return this[propertyKey];
             }
             const debouncedFunction = debounceFunction(originalFunc, options.millisecondsDelay, argumentsReducer);
